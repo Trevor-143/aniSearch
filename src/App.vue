@@ -3,15 +3,22 @@
     <header>
       <h2>ani<strong>SEARCH</strong></h2>
 
-      <form class = "search-box">
+      <form class = "search-box" @submit.prevent = "handleSearch">
         <input 
           type="search"  
           class = "search-field"  
           placeholder = "Search for an Anime..."
-          required >
+          required 
+          v-model = "search_query"/>
       </form>
 
     </header>
+
+    <main>
+      <div class = "cards">
+        <Card/>
+      </div>
+    </main>
 
     
 
@@ -19,10 +26,31 @@
 </template>
 
 <script>
-
+import Card from './components/Card.vue';
+import { ref } from "vue";
 
 export default {
-  
+
+  components: {
+    Card
+  },
+  setup() {
+    const search_query = ref("");
+    const animeList = ref([]);
+    const handleSearch = async () => {
+      animeList.value = await fetch (`https://api.jikan.moe/v4/anime/${search_query.value}/full`)
+        .then(res => res.json())
+        .then(data => data.results);
+      console.log(animeList.value);
+    }
+
+    return {
+      Card,
+      search_query,
+      animeList,
+      handleSearch
+    }
+  }
 }
 </script>
 
@@ -85,6 +113,17 @@ export default {
         background-color: #313131;
       }
     }
+  }
+ }
+ main {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding-left: 30px;
+  padding-right: 30px;
+  .card {
+    display: flex;
+    flex-wrap: wrap;
+    margin: 0 -8px;
   }
  }
 
